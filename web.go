@@ -173,6 +173,7 @@ func (ctx *Context) GetSecureCookie(name string) (string, bool) {
 var contextType reflect.Type
 
 var defaultStaticDirs []string
+var defaultTemplatesDirs []string
 
 func init() {
 	contextType = reflect.TypeOf(Context{})
@@ -189,6 +190,8 @@ func init() {
 	parent, _ := path.Split(exeFile)
 	defaultStaticDirs = append(defaultStaticDirs, path.Join(parent, "static"))
 	defaultStaticDirs = append(defaultStaticDirs, path.Join(wd, "static"))
+	defaultTemplatesDirs = append(defaultTemplatesDirs, path.Join(parent, "templates"))
+	defaultTemplatesDirs = append(defaultTemplatesDirs, path.Join(wd, "templates"))
 	return
 }
 

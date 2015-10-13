@@ -20,7 +20,9 @@ import (
 
 // ServerConfig is configuration for server objects.
 type ServerConfig struct {
+	TemplatesDir string
 	StaticDir    string
+	StaticPerfix string
 	Addr         string
 	Port         int
 	CookieSecret string
@@ -250,12 +252,63 @@ func (s *Server) tryServingFile(name string, req *http.Request, w http.ResponseW
 	//try to serve a static file
 	if s.Config.StaticDir != "" {
 		staticFile := path.Join(s.Config.StaticDir, name)
+		fmt.Println("staticfile：", staticFile)
 		if fileExists(staticFile) {
 			http.ServeFile(w, req, staticFile)
 			return true
 		}
 	} else {
 		for _, staticDir := range defaultStaticDirs {
+			staticFile := path.Join(staticDir, name)
+			if fileExists(staticFile) {
+				http.ServeFile(w, req, staticFile)
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (s *Server) tryServingStatic(reqpath string, req *http.Request, w http.ResponseWriter) bool {
+	name := reqpath
+	if s.Config.StaticPerfix != "" {
+		name = strings.TrimPrefix(reqpath, s.Config.StaticPerfix)
+		if len(name) == len(reqpath) {
+			return false
+		}
+	}
+	//try to serve a static file
+	if s.Config.StaticDir != "" {
+		staticFile := path.Join(s.Config.StaticDir, name)
+		fmt.Println("staticfile：", staticFile)
+		if fileExists(staticFile) {
+			http.ServeFile(w, req, staticFile)
+			return true
+		}
+	} else {
+		for _, staticDir := range defaultStaticDirs {
+			staticFile := path.Join(staticDir, name)
+			fmt.Println("staticfile：", staticFile)
+			if fileExists(staticFile) {
+				http.ServeFile(w, req, staticFile)
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (s *Server) tryServingTemplate(name string, req *http.Request, w http.ResponseWriter) bool {
+	//try to serve a static file
+	if s.Config.TemplatesDir != "" {
+		staticFile := path.Join(s.Config.TemplatesDir, name)
+		fmt.Println("template path：", staticFile)
+		if fileExists(staticFile) {
+			http.ServeFile(w, req, staticFile)
+			return true
+		}
+	} else {
+		for _, staticDir := range defaultTemplatesDirs {
 			staticFile := path.Join(staticDir, name)
 			if fileExists(staticFile) {
 				http.ServeFile(w, req, staticFile)
@@ -321,7 +374,7 @@ func (s *Server) routeHandler(req *http.Request, w http.ResponseWriter) (unused 
 	ctx.SetHeader("Date", webTime(tm), true)
 
 	if req.Method == "GET" || req.Method == "HEAD" {
-		if s.tryServingFile(requestPath, req, w) {
+		if s.tryServingStatic(requestPath, req, w) {
 			return
 		}
 	}
@@ -411,9 +464,9 @@ func (s *Server) routeHandler(req *http.Request, w http.ResponseWriter) (unused 
 
 	// try serving index.html or index.htm
 	if req.Method == "GET" || req.Method == "HEAD" {
-		if s.tryServingFile(path.Join(requestPath, "index.html"), req, w) {
+		if s.tryServingTemplate(path.Join(requestPath, "index.html"), req, w) {
 			return
-		} else if s.tryServingFile(path.Join(requestPath, "index.htm"), req, w) {
+		} else if s.tryServingTemplate(path.Join(requestPath, "index.htm"), req, w) {
 			return
 		}
 	}
