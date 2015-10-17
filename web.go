@@ -28,6 +28,7 @@ import (
 type Context struct {
 	Request *http.Request
 	Params  map[string]string
+	Dict    map[string]interface{}
 	Server  *Server
 	http.ResponseWriter
 }
