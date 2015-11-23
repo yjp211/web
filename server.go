@@ -280,7 +280,7 @@ func (s *Server) tryServingStatic(reqpath string, req *http.Request, w http.Resp
 	//try to serve a static file
 	if s.Config.StaticDir != "" {
 		staticFile := path.Join(s.Config.StaticDir, name)
-		fmt.Println("staticfile：", staticFile)
+		//fmt.Println("staticfile：", staticFile)
 		if fileExists(staticFile) {
 			http.ServeFile(w, req, staticFile)
 			return true
@@ -288,7 +288,7 @@ func (s *Server) tryServingStatic(reqpath string, req *http.Request, w http.Resp
 	} else {
 		for _, staticDir := range defaultStaticDirs {
 			staticFile := path.Join(staticDir, name)
-			fmt.Println("staticfile：", staticFile)
+			//fmt.Println("staticfile：", staticFile)
 			if fileExists(staticFile) {
 				http.ServeFile(w, req, staticFile)
 				return true
@@ -302,7 +302,7 @@ func (s *Server) tryServingTemplate(name string, req *http.Request, w http.Respo
 	//try to serve a static file
 	if s.Config.TemplatesDir != "" {
 		staticFile := path.Join(s.Config.TemplatesDir, name)
-		fmt.Println("template path：", staticFile)
+		//fmt.Println("template path：", staticFile)
 		if fileExists(staticFile) {
 			http.ServeFile(w, req, staticFile)
 			return true
