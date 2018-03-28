@@ -263,7 +263,8 @@ func SetLogger(logger *log.Logger) {
 
 func DefaultConfig() *ServerConfig {
 	return &ServerConfig{
-		RecoverPanic: true,
+		RecoverPanic:  true,
+		RecordRequest: true,
 	}
 }
 

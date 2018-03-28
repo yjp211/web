@@ -20,14 +20,15 @@ import (
 
 // ServerConfig is configuration for server objects.
 type ServerConfig struct {
-	TemplatesDir string
-	StaticDir    string
-	StaticPerfix string
-	Addr         string
-	Port         int
-	CookieSecret string
-	RecoverPanic bool
-	Profiler     bool
+	TemplatesDir  string
+	StaticDir     string
+	StaticPerfix  string
+	Addr          string
+	Port          int
+	CookieSecret  string
+	RecoverPanic  bool
+	Profiler      bool
+	RecordRequest bool
 }
 
 // Server represents a web.go server.
@@ -371,7 +372,9 @@ func (s *Server) routeHandler(req *http.Request, w http.ResponseWriter) (unused 
 		}
 	}
 
-	defer s.logRequest(ctx, tm)
+	if s.Config.RecordRequest {
+		defer s.logRequest(ctx, tm)
+	}
 
 	ctx.SetHeader("Date", webTime(tm), true)
 
