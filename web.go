@@ -268,4 +268,9 @@ func DefaultConfig() *ServerConfig {
 	}
 }
 
+var Config = DefaultConfig()
 var mainServer = NewServer()
+
+func init() {
+	mainServer.Config = Config
+}
